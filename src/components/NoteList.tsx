@@ -11,25 +11,26 @@ export function NoteList({ selectedNoteId, onSelect }: NoteListProps) {
 
   if (loading) {
     return (
-      <p className="text-sm text-muted-foreground text-center py-8">로딩 중...</p>
+      <p className="py-8 text-center text-body-sm text-muted-foreground">불러오는 중이에요...</p>
     );
   }
 
   if (error) {
+    // API 에러 원문(영어)은 노출하지 않는다
     return (
-      <p className="text-sm text-destructive text-center py-8">오류: {error}</p>
+      <p className="py-8 text-center text-body-sm text-destructive">노트를 불러오지 못했어요</p>
     );
   }
 
   if (notes.length === 0) {
     return (
-      <p className="text-sm text-muted-foreground text-center py-8">노트가 없습니다</p>
+      <p className="py-8 text-center text-body-sm text-muted-foreground">아직 노트가 없어요</p>
     );
   }
 
   return (
     <>
-      <p className="text-xs font-semibold tracking-widest uppercase text-muted-foreground px-1 pb-1">
+      <p className="px-1 pb-1 text-label-md tracking-widest uppercase text-muted-foreground">
         노트 {notes.length}개
       </p>
       {notes.map((note) => (

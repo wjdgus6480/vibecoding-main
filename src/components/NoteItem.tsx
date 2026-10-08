@@ -11,14 +11,14 @@ export function NoteItem({ note, isSelected, onSelect, onDelete }: NoteItemProps
   return (
     <div
       onClick={() => onSelect(note.id)}
-      className={`bg-card rounded-2xl p-4 border cursor-pointer transition-all ${
+      className={`bg-card rounded-lg p-4 border cursor-pointer transition-shadow ${
         isSelected
-          ? 'border-foreground shadow-[0_2px_12px_rgba(0,0,0,0.12)]'
-          : 'border-border hover:shadow-[0_2px_8px_rgba(0,0,0,0.07)]'
+          ? 'border-hairline-strong ring-2 ring-primary shadow-level-2'
+          : 'border-hairline shadow-level-1 hover:border-hairline-strong hover:shadow-level-2'
       }`}
     >
       <div className="flex items-start justify-between gap-2">
-        <h3 className="font-semibold text-sm text-foreground line-clamp-1 flex-1">
+        <h3 className="flex-1 text-label-lg text-foreground line-clamp-1">
           {note.title || '(제목 없음)'}
         </h3>
         <button
@@ -26,15 +26,15 @@ export function NoteItem({ note, isSelected, onSelect, onDelete }: NoteItemProps
             e.stopPropagation();
             onDelete(note.id);
           }}
-          className="text-muted-foreground hover:text-destructive text-xs shrink-0 transition-colors cursor-pointer"
+          className="shrink-0 text-label-sm text-muted-foreground cursor-pointer transition-colors hover:text-destructive focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-primary/35"
         >
           삭제
         </button>
       </div>
-      <p className="text-xs text-muted-foreground mt-1.5 line-clamp-2 leading-relaxed">
+      <p className="mt-1.5 text-body-sm text-muted-foreground line-clamp-2">
         {note.content || '(내용 없음)'}
       </p>
-      <p className="text-[10px] text-muted-foreground/70 mt-2">
+      <p className="mt-2 text-label-sm text-muted-foreground">
         {new Date(note.updatedAt).toLocaleDateString('ko-KR')}
       </p>
     </div>
