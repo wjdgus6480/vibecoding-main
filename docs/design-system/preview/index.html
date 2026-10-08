@@ -1,0 +1,888 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cheerful Notes 디자인 시스템</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    />
+    <style>
+      /* foundations/*.md 및 src/index.css @theme과 같은 값이어야 한다 (src/design-system.test.ts가 검사). 라이트 모드만: D-005 */
+      :root {
+        --primary: #ffc700;
+        --on-primary: #1e1e1e;
+        --primary-soft: #fffbeb;
+        --secondary: #1e1e1e;
+        --on-secondary: #ffffff;
+        --accent: #f59e0b;
+        --background: #f8f8f6;
+        --hairline: rgb(0 0 0 / 0.04);
+        --hairline-strong: rgb(0 0 0 / 0.06);
+        --card: #ffffff;
+        --foreground: #1e1e1e;
+        --muted: #f1f1ef;
+        --muted-foreground: #5f5e5e;
+        --border: #e4e4e7;
+        --destructive: #ba1a1a;
+        --pastel-yellow: #fef3c7;
+        --pastel-green: #dcfce7;
+        --pastel-red: #fee2e2;
+        --shadow-level-1: 0 2px 8px -2px rgba(30, 30, 30, 0.05);
+        --shadow-level-2:
+          0 12px 24px -6px rgba(30, 30, 30, 0.08), 0 4px 8px -2px rgba(255, 199, 0, 0.12);
+        --shadow-level-3: 0 20px 32px -8px rgba(30, 30, 30, 0.14);
+        --ring: 0 0 0 3px rgba(255, 199, 0, 0.35);
+        --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+        --font: 'Plus Jakarta Sans', 'Pretendard Variable', system-ui, sans-serif;
+        color-scheme: light;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--background);
+        color: var(--foreground);
+        font-family: var(--font);
+        font-size: 16px;
+        line-height: 24px;
+      }
+      .wrap {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 0 16px 64px;
+      }
+      header.top {
+        height: 64px;
+        background: var(--card);
+        border-bottom: 1px solid var(--border);
+        box-shadow: var(--shadow-level-1);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 32px;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      }
+      .logo {
+        font-size: 24px;
+        line-height: 32px;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        margin: 0;
+      }
+      nav {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin: 24px 0 8px;
+      }
+      nav a {
+        font-size: 12px;
+        line-height: 16px;
+        font-weight: 700;
+        color: var(--foreground);
+        text-decoration: none;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 9999px;
+        padding: 6px 12px;
+      }
+      nav a:hover {
+        background: var(--muted);
+      }
+      section {
+        margin-top: 40px;
+      }
+      h2 {
+        font-size: 24px;
+        line-height: 32px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        margin: 0 0 4px;
+      }
+      .desc {
+        color: var(--muted-foreground);
+        font-size: 14px;
+        line-height: 20px;
+        margin: 0 0 16px;
+      }
+      .label {
+        font-size: 12px;
+        line-height: 16px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted-foreground);
+        margin: 24px 0 8px;
+      }
+      code {
+        font-family: ui-monospace, Consolas, monospace;
+        font-size: 12px;
+        background: var(--muted);
+        padding: 1px 6px;
+        border-radius: 4px;
+      }
+      .panel {
+        background: var(--card);
+        border: 1px solid var(--hairline);
+        box-shadow: var(--shadow-level-1);
+        border-radius: 16px;
+        padding: 24px;
+      }
+
+      /* 색상 */
+      .swatches {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 12px;
+      }
+      .swatch {
+        background: var(--card);
+        border: 1px solid var(--hairline);
+        box-shadow: var(--shadow-level-1);
+        border-radius: 8px;
+        overflow: hidden;
+      }
+      .swatch .chip {
+        height: 72px;
+        border-bottom: 1px solid var(--hairline);
+        display: flex;
+        align-items: flex-end;
+        padding: 8px 12px;
+        font-size: 14px;
+        font-weight: 700;
+      }
+      .swatch .meta {
+        padding: 10px 12px;
+        font-size: 12px;
+        line-height: 16px;
+      }
+      .swatch .meta b {
+        display: block;
+        font-size: 14px;
+        line-height: 18px;
+      }
+      .swatch .meta span {
+        color: var(--muted-foreground);
+      }
+
+      /* 타이포 */
+      .type-row {
+        display: grid;
+        grid-template-columns: 160px 1fr;
+        gap: 16px;
+        align-items: baseline;
+        padding: 12px 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .type-row:last-child {
+        border-bottom: none;
+      }
+      .type-row .name {
+        font-size: 12px;
+        line-height: 16px;
+        color: var(--muted-foreground);
+      }
+      .type-row .name b {
+        display: block;
+        color: var(--foreground);
+        font-size: 14px;
+      }
+
+      /* 모서리·그림자 */
+      .grid-4 {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 16px;
+      }
+      .radius-box {
+        height: 88px;
+        background: var(--pastel-yellow);
+        border: 2px solid var(--primary);
+        display: grid;
+        place-items: center;
+        font-size: 12px;
+        font-weight: 700;
+        text-align: center;
+      }
+      .elev {
+        height: 120px;
+        border-radius: 8px;
+        display: grid;
+        place-items: center;
+        text-align: center;
+        font-size: 12px;
+        line-height: 16px;
+      }
+      .elev b {
+        display: block;
+        font-size: 14px;
+      }
+
+      /* 버튼 */
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+      }
+      .btn {
+        font-family: inherit;
+        font-size: 14px;
+        line-height: 18px;
+        font-weight: 700;
+        border-radius: 9999px;
+        border: none;
+        cursor: pointer;
+        transition:
+          transform 150ms ease,
+          filter 150ms ease,
+          background-color 150ms ease;
+      }
+      .btn:focus-visible {
+        outline: none;
+        box-shadow: var(--ring);
+      }
+      .btn:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+        transform: none !important;
+      }
+      .btn-primary {
+        background: var(--primary);
+        color: var(--on-primary);
+        padding: 12px 24px;
+      }
+      .btn-primary:not(:disabled):hover {
+        transform: scale(1.02);
+        filter: brightness(0.97);
+      }
+      .btn-secondary {
+        background: var(--secondary);
+        color: var(--on-secondary);
+        padding: 10px 20px;
+      }
+      .btn-secondary:not(:disabled):hover {
+        transform: scale(1.02);
+      }
+      .btn-ghost {
+        background: var(--card);
+        color: var(--foreground);
+        border: 1px solid var(--border);
+        padding: 10px 20px;
+      }
+      .btn-ghost:hover {
+        background: var(--muted);
+      }
+      .btn-text {
+        background: none;
+        color: var(--muted-foreground);
+        font-size: 11px;
+        line-height: 14px;
+        font-weight: 600;
+        padding: 0;
+      }
+      .btn-text:hover {
+        color: var(--destructive);
+      }
+
+      /* 칩·배지 */
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        background: var(--pastel-yellow);
+        color: var(--foreground);
+        border-radius: 9999px;
+        padding: 4px 12px;
+        font-size: 12px;
+        line-height: 16px;
+        font-weight: 700;
+      }
+      .tag button {
+        background: none;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+        color: var(--muted-foreground);
+        font-size: 14px;
+        line-height: 1;
+      }
+      .tag button:hover {
+        color: var(--destructive);
+      }
+      .badge {
+        border-radius: 9999px;
+        padding: 2px 10px;
+        font-size: 11px;
+        line-height: 14px;
+        font-weight: 600;
+        color: var(--foreground);
+      }
+      .count {
+        background: var(--accent);
+        color: var(--on-primary);
+        border-radius: 9999px;
+        min-width: 20px;
+        height: 20px;
+        padding: 0 6px;
+        font-size: 11px;
+        font-weight: 700;
+        display: inline-grid;
+        place-items: center;
+      }
+
+      /* 입력 */
+      .search {
+        position: relative;
+        max-width: 420px;
+      }
+      .search input {
+        width: 100%;
+        height: 48px;
+        border-radius: 9999px;
+        border: 1px solid var(--border);
+        background: var(--card);
+        padding: 0 40px 0 44px;
+        font-family: inherit;
+        font-size: 14px;
+        color: var(--foreground);
+        outline: none;
+        transition:
+          box-shadow 150ms ease,
+          border-color 150ms ease;
+      }
+      .search input:focus {
+        box-shadow: var(--ring);
+        border-color: var(--primary);
+      }
+      .search .icon {
+        position: absolute;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 18px;
+        height: 18px;
+        color: var(--foreground);
+      }
+      .search .clear {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 22px;
+        height: 22px;
+        border-radius: 9999px;
+        border: none;
+        background: var(--muted);
+        color: var(--muted-foreground);
+        cursor: pointer;
+        font-size: 12px;
+      }
+
+      /* 카드 */
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 16px;
+      }
+      .note-card {
+        background: var(--card);
+        border: 1px solid var(--hairline);
+        box-shadow: var(--shadow-level-1);
+        border-radius: 8px;
+        padding: 16px;
+        cursor: pointer;
+        transition: box-shadow 150ms ease;
+      }
+      .note-card:hover,
+      .note-card.hover {
+        box-shadow: var(--shadow-level-2);
+        border-color: var(--hairline-strong);
+      }
+      .note-card.selected {
+        box-shadow:
+          0 0 0 2px var(--primary),
+          var(--shadow-level-2);
+      }
+      .note-card .head {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        align-items: flex-start;
+      }
+      .note-card h3 {
+        margin: 0;
+        font-size: 14px;
+        line-height: 18px;
+        font-weight: 700;
+      }
+      .note-card p {
+        margin: 6px 0 0;
+        font-size: 14px;
+        line-height: 20px;
+        color: var(--muted-foreground);
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      .note-card .date {
+        margin-top: 8px;
+        font-size: 11px;
+        line-height: 14px;
+        font-weight: 600;
+        color: var(--muted-foreground);
+      }
+      .state-label {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--muted-foreground);
+        margin-bottom: 6px;
+      }
+
+      /* 편집기 미리보기 */
+      .editor {
+        background: var(--card);
+        border: 1px solid var(--hairline);
+        box-shadow: var(--shadow-level-1);
+        border-radius: 16px;
+        padding: 32px;
+        max-width: 672px;
+      }
+      .editor .title {
+        font-size: 20px;
+        line-height: 28px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        margin: 0 0 16px;
+      }
+      .editor .body {
+        font-size: 16px;
+        line-height: 24px;
+        color: var(--muted-foreground);
+        margin: 16px 0 0;
+      }
+      .editor hr {
+        border: none;
+        height: 1px;
+        background: var(--border);
+        margin: 16px 0 0;
+      }
+      .editor .actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 24px;
+        padding-top: 16px;
+        border-top: 1px solid var(--border);
+      }
+      .tag-input {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+      }
+      .tag-input span.ph {
+        font-size: 14px;
+        color: rgba(95, 94, 94, 0.6);
+      }
+      .error-msg {
+        font-size: 12px;
+        line-height: 16px;
+        font-weight: 700;
+        color: var(--destructive);
+        margin: 8px 0 0;
+      }
+
+      /* 빈 상태 */
+      .empty {
+        text-align: center;
+        padding: 32px;
+      }
+      .empty .icon-chip {
+        width: 64px;
+        height: 64px;
+        border-radius: 9999px;
+        background: var(--primary-soft);
+        display: grid;
+        place-items: center;
+        font-size: 30px;
+        margin: 0 auto 12px;
+      }
+      .empty p {
+        margin: 0;
+        font-size: 14px;
+        line-height: 20px;
+        color: var(--muted-foreground);
+      }
+
+      /* 체크박스 (참고용) */
+      .check {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        cursor: pointer;
+      }
+      .check input {
+        appearance: none;
+        width: 20px;
+        height: 20px;
+        border-radius: 4px;
+        border: 2px solid var(--border);
+        background: var(--card);
+        display: grid;
+        place-items: center;
+        margin: 0;
+        cursor: pointer;
+        transition:
+          transform 200ms var(--ease-spring),
+          background-color 150ms ease;
+      }
+      .check input:checked {
+        background: var(--primary);
+        border-color: var(--primary);
+        transform: scale(1.08);
+      }
+      .check input:checked::after {
+        content: '✓';
+        color: var(--on-primary);
+        font-size: 13px;
+        font-weight: 800;
+        line-height: 1;
+      }
+      .check input:focus-visible {
+        outline: none;
+        box-shadow: var(--ring);
+      }
+
+      @media (max-width: 640px) {
+        header.top {
+          padding: 0 16px;
+        }
+        .type-row {
+          grid-template-columns: 1fr;
+          gap: 4px;
+        }
+        .editor {
+          padding: 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <p class="logo">📝 Notes</p>
+      <button class="btn btn-secondary">+ 새 노트</button>
+    </header>
+
+    <div class="wrap">
+      <nav>
+        <a href="#colors">색상</a>
+        <a href="#type">타이포</a>
+        <a href="#shape">모서리·그림자</a>
+        <a href="#buttons">버튼</a>
+        <a href="#chips">태그·배지</a>
+        <a href="#inputs">입력</a>
+        <a href="#cards">카드</a>
+        <a href="#editor">편집기</a>
+      </nav>
+
+      <section id="colors">
+        <h2>색상</h2>
+        <p class="desc">
+          노랑 위 글자는 항상 차콜. 호박색(accent)은 채움에만 쓰고 글자색으로 쓰지 않는다.
+        </p>
+        <p class="label">브랜드</p>
+        <div class="swatches">
+          <div class="swatch">
+            <div class="chip" style="background: #ffc700; color: #1e1e1e">Aa 저장</div>
+            <div class="meta"><b>primary</b>#FFC700 · <span>주요 액션, 선택</span></div>
+          </div>
+          <div class="swatch">
+            <div class="chip" style="background: #fffbeb">Aa</div>
+            <div class="meta"><b>primary-soft</b>#FFFBEB · <span>아이콘 칩</span></div>
+          </div>
+          <div class="swatch">
+            <div class="chip" style="background: #1e1e1e; color: #fff">Aa 새 노트</div>
+            <div class="meta"><b>secondary</b>#1E1E1E · <span>보조 강조</span></div>
+          </div>
+          <div class="swatch">
+            <div class="chip" style="background: #f59e0b; color: #1e1e1e">★ 3</div>
+            <div class="meta"><b>accent</b>#F59E0B · <span>별점·카운트 채움</span></div>
+          </div>
+        </div>
+        <p class="label">중립·표면</p>
+        <div class="swatches">
+          <div class="swatch">
+            <div class="chip" style="background: #f8f8f6"></div>
+            <div class="meta"><b>background</b>#F8F8F6 · <span>캔버스</span></div>
+          </div>
+          <div class="swatch">
+            <div class="chip" style="background: #ffffff"></div>
+            <div class="meta"><b>card</b>#FFFFFF · <span>카드·패널</span></div>
+          </div>
+          <div class="swatch">
+            <div class="chip" style="background: #f1f1ef"></div>
+            <div class="meta"><b>muted</b>#F1F1EF · <span>사이드바, 보조 배경</span></div>
+          </div>
+          <div class="swatch">
+            <div class="chip" style="background: #5f5e5e; color: #fff">Aa</div>
+            <div class="meta"><b>muted-foreground</b>#5F5E5E · <span>보조 텍스트</span></div>
+          </div>
+          <div class="swatch">
+            <div class="chip" style="background: #e4e4e7"></div>
+            <div class="meta"><b>border</b>#E4E4E7 · <span>테두리</span></div>
+          </div>
+          <div class="swatch">
+            <div class="chip" style="background: #ba1a1a; color: #fff">Aa</div>
+            <div class="meta"><b>destructive</b>#BA1A1A · <span>삭제·오류</span></div>
+          </div>
+        </div>
+        <p class="label">파스텔</p>
+        <div class="swatches">
+          <div class="swatch">
+            <div class="chip" style="background: #fef3c7">Aa</div>
+            <div class="meta"><b>pastel-yellow</b>#FEF3C7 · <span>태그 칩</span></div>
+          </div>
+          <div class="swatch">
+            <div class="chip" style="background: #dcfce7">Aa</div>
+            <div class="meta"><b>pastel-green</b>#DCFCE7 · <span>예비</span></div>
+          </div>
+          <div class="swatch">
+            <div class="chip" style="background: #fee2e2">Aa</div>
+            <div class="meta"><b>pastel-red</b>#FEE2E2 · <span>예비</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="type">
+        <h2>타이포그래피</h2>
+        <p class="desc">Plus Jakarta Sans(영문·숫자) + Pretendard(한글). 헤드라인 자간 -0.02em.</p>
+        <div class="panel">
+          <div class="type-row">
+            <div class="name"><b>headline-md</b>24 / 32 · 800</div>
+            <div
+              style="font-size: 24px; line-height: 32px; font-weight: 800; letter-spacing: -0.02em"
+            >
+              📝 Notes 오늘의 메모
+            </div>
+          </div>
+          <div class="type-row">
+            <div class="name"><b>headline-sm</b>20 / 28 · 700</div>
+            <div
+              style="font-size: 20px; line-height: 28px; font-weight: 700; letter-spacing: -0.02em"
+            >
+              React 공부 기록 2026
+            </div>
+          </div>
+          <div class="type-row">
+            <div class="name"><b>body-md</b>16 / 24 · 400</div>
+            <div style="font-size: 16px; line-height: 24px">
+              React와 TypeScript를 공부 중이에요. Hooks are fun.
+            </div>
+          </div>
+          <div class="type-row">
+            <div class="name"><b>body-sm</b>14 / 20 · 400</div>
+            <div style="font-size: 14px; line-height: 20px">카드 미리보기와 안내 문구에 써요.</div>
+          </div>
+          <div class="type-row">
+            <div class="name"><b>label-lg</b>14 / 18 · 700</div>
+            <div style="font-size: 14px; line-height: 18px; font-weight: 700">저장 · 카드 제목</div>
+          </div>
+          <div class="type-row">
+            <div class="name"><b>label-md</b>12 / 16 · 700</div>
+            <div style="font-size: 12px; line-height: 16px; font-weight: 700">노트 4개 · 태그</div>
+          </div>
+          <div class="type-row">
+            <div class="name"><b>label-sm</b>11 / 14 · 600</div>
+            <div style="font-size: 11px; line-height: 14px; font-weight: 600">2026. 10. 7.</div>
+          </div>
+        </div>
+      </section>
+
+      <section id="shape">
+        <h2>모서리·그림자</h2>
+        <p class="desc">Tailwind 기본 스케일에 대응. 카드 8px, 큰 패널 16px, 버튼·칩은 알약.</p>
+        <div class="grid-4">
+          <div class="radius-box" style="border-radius: 4px">sm 4px<br />rounded-sm</div>
+          <div class="radius-box" style="border-radius: 8px">
+            DEFAULT 8px<br />rounded-lg · 카드
+          </div>
+          <div class="radius-box" style="border-radius: 12px">md 12px<br />rounded-xl</div>
+          <div class="radius-box" style="border-radius: 16px">lg 16px<br />rounded-2xl · 패널</div>
+          <div class="radius-box" style="border-radius: 24px">xl 24px<br />rounded-3xl</div>
+          <div class="radius-box" style="border-radius: 9999px">full<br />rounded-full</div>
+        </div>
+        <p class="label">Elevation</p>
+        <div class="grid-4">
+          <div class="elev" style="background: #f8f8f6; border: 1px dashed #e4e4e7">
+            <div><b>Level 0</b>캔버스</div>
+          </div>
+          <div
+            class="elev"
+            style="
+              background: #fff;
+              border: 1px solid var(--hairline);
+              box-shadow: var(--shadow-level-1);
+            "
+          >
+            <div><b>Level 1</b>카드 기본·패널</div>
+          </div>
+          <div
+            class="elev"
+            style="
+              background: #fff;
+              border: 1px solid var(--hairline-strong);
+              box-shadow: var(--shadow-level-2);
+            "
+          >
+            <div><b>Level 2</b>hover·선택</div>
+          </div>
+          <div class="elev" style="background: #fff; box-shadow: var(--shadow-level-3)">
+            <div><b>Level 3</b>모달·토스트</div>
+          </div>
+        </div>
+      </section>
+
+      <section id="buttons">
+        <h2>버튼</h2>
+        <p class="desc">
+          모두 알약 모양. 노란 Primary는 한 화면에 하나. Tab으로 포커스 링을 확인할 수 있다.
+        </p>
+        <div class="panel">
+          <div class="row">
+            <button class="btn btn-primary">저장</button>
+            <button class="btn btn-secondary">+ 새 노트</button>
+            <button class="btn btn-ghost">취소</button>
+            <button class="btn btn-text">삭제</button>
+            <button class="btn btn-primary" disabled>저장 중...</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="chips">
+        <h2>태그·배지</h2>
+        <p class="desc">태그는 노랑 파스텔 하나로 통일. 글자는 차콜.</p>
+        <div class="panel">
+          <div class="row">
+            <span class="tag">React <button aria-label="태그 삭제: React">×</button></span>
+            <span class="tag"
+              >TypeScript <button aria-label="태그 삭제: TypeScript">×</button></span
+            >
+            <span class="tag">공부 <button aria-label="태그 삭제: 공부">×</button></span>
+            <span class="badge" style="background: var(--pastel-green)">완료</span>
+            <span class="badge" style="background: var(--pastel-red)">중요</span>
+            <span class="count">3</span>
+          </div>
+          <p class="error-msg">이미 있는 태그예요</p>
+        </div>
+      </section>
+
+      <section id="inputs">
+        <h2>입력</h2>
+        <p class="desc">검색바(예비): 알약 모양, 포커스 시 노란 링. 클릭해서 확인.</p>
+        <div class="search">
+          <svg
+            class="icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            aria-hidden="true"
+          >
+            <circle cx="11" cy="11" r="7" />
+            <path d="m20 20-3.5-3.5" />
+          </svg>
+          <input type="text" placeholder="노트 검색" aria-label="노트 검색" value="React" />
+          <button class="clear" aria-label="검색어 지우기">×</button>
+        </div>
+        <p class="label">체크박스 (참고용)</p>
+        <div class="row">
+          <label class="check"><input type="checkbox" checked /> 완료한 노트</label>
+          <label class="check"><input type="checkbox" /> 고정</label>
+        </div>
+      </section>
+
+      <section id="cards">
+        <h2>노트 카드</h2>
+        <p class="desc">Level 1 → hover Level 2 → 선택은 노랑 링(2px) + Level 2.</p>
+        <div class="cards">
+          <div>
+            <p class="state-label">기본</p>
+            <div class="note-card">
+              <div class="head">
+                <h3>두 번째 노트</h3>
+                <button class="btn btn-text">삭제</button>
+              </div>
+              <p>할 일 목록을 정리해봅시다.</p>
+              <p class="date">2024. 1. 2.</p>
+            </div>
+          </div>
+          <div>
+            <p class="state-label">hover</p>
+            <div class="note-card hover">
+              <div class="head">
+                <h3>내일의 하루는?</h3>
+                <button class="btn btn-text">삭제</button>
+              </div>
+              <p>아침부터 일찍 일어나고 나서 고민하자.</p>
+              <p class="date">2026. 3. 23.</p>
+            </div>
+          </div>
+          <div>
+            <p class="state-label">선택</p>
+            <div class="note-card selected">
+              <div class="head">
+                <h3>세 번째 노트</h3>
+                <button class="btn btn-text">삭제</button>
+              </div>
+              <p>React와 TypeScript를 공부 중입니다.</p>
+              <p class="date">2024. 1. 3.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="editor">
+        <h2>편집기 · 빈 상태</h2>
+        <p class="desc">큰 패널은 16px 모서리. 제목·본문은 테두리 없는 인라인 입력.</p>
+        <div
+          class="cards"
+          style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); align-items: start"
+        >
+          <div class="editor">
+            <p class="label" style="margin-top: 0">노트 편집</p>
+            <p class="title">세 번째 노트</p>
+            <div class="tag-input">
+              <span class="tag">React <button aria-label="태그 삭제: React">×</button></span>
+              <span class="tag"
+                >TypeScript <button aria-label="태그 삭제: TypeScript">×</button></span
+              >
+              <span class="ph">태그 입력 후 Enter</span>
+            </div>
+            <hr />
+            <p class="body">React와 TypeScript를 공부 중입니다.</p>
+            <div class="actions">
+              <button class="btn btn-primary">저장</button>
+              <button class="btn btn-ghost">취소</button>
+            </div>
+          </div>
+          <div class="panel empty">
+            <div class="icon-chip">📝</div>
+            <p>노트를 고르거나 새 노트를 만들어보세요</p>
+          </div>
+        </div>
+      </section>
+    </div>
+  </body>
+</html>
