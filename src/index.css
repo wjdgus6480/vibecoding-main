@@ -1,18 +1,62 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
+/* 값은 docs/design-system/foundations/*.md와 같아야 한다 (src/design-system.test.ts가 검사) */
 @theme {
-  --color-background: hsl(0 0% 94%);
-  --color-card: hsl(0 0% 100%);
-  --color-foreground: hsl(220 35% 14%);
-  --color-muted: hsl(0 0% 90%);
-  --color-muted-foreground: hsl(0 0% 42%);
-  --color-border: hsl(0 0% 88%);
-  --color-destructive: hsl(0 84% 60%);
+  /* 브랜드 */
+  --color-primary: #ffc700;
+  --color-on-primary: #1e1e1e;
+  --color-primary-soft: #fffbeb;
+  --color-secondary: #1e1e1e;
+  --color-on-secondary: #ffffff;
+  --color-accent: #f59e0b;
 
-  --font-sans: 'Pretendard Variable', system-ui, sans-serif;
-  --font-display: 'Boogaloo', sans-serif;
+  /* 중립·표면 */
+  --color-background: #f8f8f6;
+  --color-card: #ffffff;
+  --color-foreground: #1e1e1e;
+  --color-muted: #f1f1ef;
+  --color-muted-foreground: #5f5e5e;
+  --color-border: #e4e4e7;
+  --color-hairline: rgb(0 0 0 / 0.04);
+  --color-hairline-strong: rgb(0 0 0 / 0.06);
+  --color-destructive: #ba1a1a;
 
-  --radius: 0.75rem;
+  /* 파스텔 */
+  --color-pastel-yellow: #fef3c7;
+  --color-pastel-green: #dcfce7;
+  --color-pastel-red: #fee2e2;
+
+  /* 폰트 */
+  --font-sans: 'Plus Jakarta Sans', 'Pretendard Variable', system-ui, sans-serif;
+
+  /* 타이포 스케일 */
+  --text-headline-md: 1.5rem;
+  --text-headline-md--line-height: 2rem;
+  --text-headline-md--font-weight: 700;
+  --text-headline-sm: 1.25rem;
+  --text-headline-sm--line-height: 1.75rem;
+  --text-headline-sm--font-weight: 700;
+  --text-body-md: 1rem;
+  --text-body-md--line-height: 1.5rem;
+  --text-body-sm: 0.875rem;
+  --text-body-sm--line-height: 1.25rem;
+  --text-label-lg: 0.875rem;
+  --text-label-lg--line-height: 1.125rem;
+  --text-label-lg--font-weight: 700;
+  --text-label-md: 0.75rem;
+  --text-label-md--line-height: 1rem;
+  --text-label-md--font-weight: 700;
+  --text-label-sm: 0.6875rem;
+  --text-label-sm--line-height: 0.875rem;
+  --text-label-sm--font-weight: 600;
+
+  /* 그림자 */
+  --shadow-level-1: 0 2px 8px -2px rgba(30, 30, 30, 0.05);
+  --shadow-level-2: 0 12px 24px -6px rgba(30, 30, 30, 0.08), 0 4px 8px -2px rgba(255, 199, 0, 0.12);
+  --shadow-level-3: 0 20px 32px -8px rgba(30, 30, 30, 0.14);
+
+  /* 이징 */
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 @layer base {

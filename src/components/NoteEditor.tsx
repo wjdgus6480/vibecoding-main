@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNotes } from '../context/NotesContext';
+import { addTags } from '../utils/tags';
+import { TagInput } from './TagInput';
 
 interface NoteEditorProps {
   selectedNoteId: string | null;
@@ -11,6 +13,8 @@ export function NoteEditor({ selectedNoteId, isCreating, onDone }: NoteEditorPro
   const { notes, addNote, editNote } = useNotes();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [tags, setTags] = useState<string[]>([]);
+  const [tagDraft, setTagDraft] = useState('');
   const [saving, setSaving] = useState(false);
 
   const selectedNote = notes.find((n) => n.id === selectedNoteId);
@@ -20,9 +24,13 @@ export function NoteEditor({ selectedNoteId, isCreating, onDone }: NoteEditorPro
     if (selectedNote) {
       setTitle(selectedNote.title);
       setContent(selectedNote.content);
+      setTags(selectedNote.tags);
+      setTagDraft('');
     } else if (isCreating) {
       setTitle('');
       setContent('');
+      setTags([]);
+      setTagDraft('');
     }
   }, [selectedNoteId, isCreating]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -32,17 +40,22 @@ export function NoteEditor({ selectedNoteId, isCreating, onDone }: NoteEditorPro
       return;
     }
 
+    // 입력창에 남은 텍스트도 유효하면 태그로 포함 (입력 손실 방지)
+    const { tags: finalTags } = addTags(tags, [tagDraft]);
+
     setSaving(true);
     try {
       if (isCreating) {
-        await addNote(title, content);
+        await addNote(title, content, finalTags);
       } else if (selectedNoteId) {
-        await editNote(selectedNoteId, { title, content });
+        await editNote(selectedNoteId, { title, content, tags: finalTags });
       }
+      setTags(finalTags);
+      setTagDraft('');
       onDone();
     } catch (e) {
       console.error(e);
-      alert('저장에 실패했습니다');
+      alert('저장에 실패했어요');
     } finally {
       setSaving(false);
     }
@@ -53,9 +66,11 @@ export function NoteEditor({ selectedNoteId, isCreating, onDone }: NoteEditorPro
     return (
       <div className="flex items-center justify-center h-full">
         <div className="text-center space-y-3">
-          <p className="text-5xl">📝</p>
-          <p className="text-muted-foreground text-sm">
-            노트를 선택하거나 새 노트를 만드세요
+          <div className="mx-auto size-16 rounded-full bg-primary-soft grid place-items-center text-3xl">
+            📝
+          </div>
+          <p className="text-body-sm text-muted-foreground">
+            노트를 고르거나 새 노트를 만들어보세요
           </p>
         </div>
       </div>
@@ -63,9 +78,9 @@ export function NoteEditor({ selectedNoteId, isCreating, onDone }: NoteEditorPro
   }
 
   return (
-    <div className="bg-card rounded-3xl px-8 sm:px-12 py-8 shadow-[0_2px_12px_rgba(0,0,0,0.07)] border border-border max-w-2xl">
+    <div className="bg-card rounded-2xl px-8 sm:px-12 py-8 border border-hairline shadow-level-1 max-w-2xl">
       {/* 섹션 라벨 */}
-      <p className="text-xs font-semibold tracking-widest uppercase text-muted-foreground mb-6">
+      <p className="mb-6 text-label-md tracking-widest uppercase text-muted-foreground">
         {isCreating ? '새 노트' : '노트 편집'}
       </p>
 
@@ -75,7 +90,16 @@ export function NoteEditor({ selectedNoteId, isCreating, onDone }: NoteEditorPro
         value={title}
         onChange={(e) => setTitle(e.target.value)}
         placeholder="제목"
-        className="w-full text-xl font-bold text-foreground bg-transparent border-none outline-none placeholder:text-muted-foreground/50 mb-4"
+        className="w-full mb-4 text-headline-sm tracking-[-0.02em] text-foreground bg-transparent border-none outline-none placeholder:text-muted-foreground/60"
+      />
+
+      {/* 태그 입력 */}
+      <TagInput
+        key={selectedNoteId ?? 'new'}
+        tags={tags}
+        draft={tagDraft}
+        onTagsChange={setTags}
+        onDraftChange={setTagDraft}
       />
 
       {/* 구분선 */}
@@ -85,23 +109,23 @@ export function NoteEditor({ selectedNoteId, isCreating, onDone }: NoteEditorPro
       <textarea
         value={content}
         onChange={(e) => setContent(e.target.value)}
-        placeholder="내용을 입력하세요..."
+        placeholder="내용을 적어보세요..."
         rows={14}
-        className="w-full text-base text-foreground/70 bg-transparent border-none outline-none resize-none placeholder:text-muted-foreground/50 leading-relaxed"
+        className="w-full text-body-md text-foreground bg-transparent border-none outline-none resize-none placeholder:text-muted-foreground/60"
       />
 
       {/* 버튼 영역 */}
-      <div className="flex gap-3 mt-6 pt-4 border-t border-border">
+      <div className="flex items-center gap-3 mt-6 pt-4 border-t border-border">
         <button
           onClick={handleSave}
           disabled={saving}
-          className="bg-foreground text-card px-5 py-2 rounded-xl text-sm font-semibold hover:opacity-75 transition-opacity disabled:opacity-40 cursor-pointer"
+          className="bg-primary text-on-primary rounded-full px-6 py-3 text-label-lg cursor-pointer transition hover:scale-[1.02] hover:brightness-[0.97] focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-primary/35 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100"
         >
           {saving ? '저장 중...' : '저장'}
         </button>
         <button
           onClick={onDone}
-          className="px-5 py-2 rounded-xl text-sm font-semibold text-muted-foreground bg-muted hover:bg-border transition-colors cursor-pointer"
+          className="bg-card text-foreground border border-border rounded-full px-5 py-2.5 text-label-lg cursor-pointer transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-primary/35"
         >
           취소
         </button>
